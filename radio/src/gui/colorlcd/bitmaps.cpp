@@ -101,6 +101,10 @@ const uint8_t LBM_RSCALE[] = {
 #include "mask_rscale.lbm"
 };
 
+const uint8_t LBM_MODEL[] = {
+#include "mask_model.lbm"
+};
+
 /*
  *  Model selection screen bitmaps
  */

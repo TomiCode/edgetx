@@ -37,38 +37,29 @@ class ModelBitmapWidget: public Widget
     {
       std::string filename = std::string(g_model.header.bitmap);
 
-      // set font colour from options[0], if use theme color option off
-      LcdFlags fontColor;
-      if (persistentData->options[4].value.boolValue)
-        fontColor = COLOR_THEME_SECONDARY1;
-      else
-        fontColor = COLOR2FLAGS(persistentData->options[0].value.unsignedValue);
-
-      // get font size from options[1]
-      LcdFlags fontSize = persistentData->options[1].value.unsignedValue << 8u;
+      // get font size from options[0]
+      LcdFlags fontSize = persistentData->options[0].value.unsignedValue << 8u;
 
       // fill bg from options[3] if options[2] set
-      if (persistentData->options[2].value.boolValue) {
-        LcdFlags fillColour = COLOR2FLAGS(persistentData->options[3].value.unsignedValue);
-        dc->drawSolidFilledRect(0, 0, width(), height(), fillColour);
+      if (persistentData->options[1].value.boolValue) {
+        // LcdFlags fillColour = COLOR2FLAGS(persistentData->options[3].value.unsignedValue);
+        dc->drawFilledRect(0, 0, width(), height(), SOLID, COLOR_THEME_PRIMARY2, OPACITY(5));
       }
 
       if (buffer &&
-          ((buffer->width() != width()) || (buffer->height() != height()) ||
-           (deps_hash != getHash()))) {
-
+        ((buffer->width() != width()) || (buffer->height() != height()) || (deps_hash != getHash()))) {
         loadBitmap();
         deps_hash = getHash();
       }
 
       // big space to draw
       if (rect.h >= 96 && rect.w >= 120) {
-
+        dc->drawBitmapPattern(6, 4, LBM_MODEL, COLOR_THEME_SECONDARY1);
+        dc->drawSizedText(42, 8, g_model.header.name, LEN_MODEL_NAME, FONT(STD) | COLOR_THEME_SECONDARY1);
+        dc->drawSolidFilledRect(40, 30, rect.w, 2, COLOR_THEME_SECONDARY1);
         if (!filename.empty() && buffer) {
-          dc->drawBitmap(0, 38, buffer.get());
+          dc->drawBitmap(0, 36, buffer.get());
         }
-
-        dc->drawSizedText(5, 5, g_model.header.name, LEN_MODEL_NAME, fontSize | fontColor);
       }
       // smaller space to draw
       else {
@@ -76,7 +67,7 @@ class ModelBitmapWidget: public Widget
           dc->drawBitmap(0, 0, buffer.get());
         }
         else {
-          dc->drawSizedText(0, 0, g_model.header.name, LEN_MODEL_NAME, fontSize | fontColor);
+          dc->drawSizedText(0, 0, g_model.header.name, LEN_MODEL_NAME, fontSize | COLOR_THEME_SECONDARY1);
         }
       }
     }
@@ -99,7 +90,7 @@ class ModelBitmapWidget: public Widget
     {
       return hash(g_model.header.bitmap, sizeof(g_model.header.bitmap));
     }
-  
+
     void loadBitmap()
     {
       std::string filename = std::string(g_model.header.bitmap);
@@ -127,11 +118,8 @@ class ModelBitmapWidget: public Widget
 };
 
 const ZoneOption ModelBitmapWidget::options[] = {
-    {STR_COLOR, ZoneOption::Color, OPTION_VALUE_UNSIGNED(COLOR_THEME_SECONDARY1>>16)},
     {STR_SIZE, ZoneOption::TextSize, OPTION_VALUE_UNSIGNED(FONT_STD_INDEX)},
     {STR_FILL_BACKGROUND, ZoneOption::Bool, OPTION_VALUE_BOOL(false)},
-    {STR_BG_COLOR, ZoneOption::Color, OPTION_VALUE_UNSIGNED(COLOR_THEME_SECONDARY3>>16)},
-    {STR_USE_THEME_COLOR, ZoneOption::Bool, OPTION_VALUE_BOOL(true)},
     {nullptr, ZoneOption::Bool}};
 
 BaseWidgetFactory<ModelBitmapWidget> modelBitmapWidget("ModelBmp", ModelBitmapWidget::options, "Models");

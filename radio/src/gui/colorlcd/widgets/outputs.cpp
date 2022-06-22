@@ -22,8 +22,8 @@
 #include "opentx.h"
 #include "widgets_container_impl.h"
 
-#define RECT_BORDER 1
-#define ROW_HEIGHT 17
+#define RECT_BORDER 2
+#define ROW_HEIGHT 18
 
 #define VIEW_CHANNELS_LIMIT_PCT \
   (g_model.extendedLimits ? LIMIT_EXT_PERCENT : 100)
@@ -62,7 +62,7 @@ class OutputsWidget : public Widget
     const uint16_t barLft = x + RECT_BORDER;
     const uint16_t barMid = barLft + barW / 2;
 
-    LcdFlags barColor = COLOR2FLAGS(bar_color);
+    // LcdFlags barColor = COLOR2FLAGS(bar_color);
     LcdFlags txtColor = COLOR2FLAGS(txt_color);
 
     for (uint8_t curChan = firstChan;
@@ -74,27 +74,30 @@ class OutputsWidget : public Widget
           barW * limit<int16_t>(0, abs(chanVal), VIEW_CHANNELS_LIMIT_PCT),
           VIEW_CHANNELS_LIMIT_PCT * 2);
 
-      if (bg_shown) {
-        lcdSetColor(bg_color);
-        dc->drawSolidFilledRect(barLft, barTop, barW, barH, CUSTOM_COLOR);
-      }
+    //   if (bg_shown) {
+    //     lcdSetColor(bg_color);
+    //     dc->drawSolidFilledRect(barLft, barTop, barW, barH, CUSTOM_COLOR);
+    //   }
+
       if (fillW)
         dc->drawSolidFilledRect((chanVal > 0 ? barMid : barMid - fillW), barTop,
-                                fillW, barH, barColor);
-      lcd->drawSolidVerticalLine(barMid, barTop, barH, COLOR_THEME_SECONDARY1);
-      dc->drawRect(x, rowTop, w, rowH + 1);
-      dc->drawNumber(x + barW - 10, barTop, chanVal,
-                     FONT(XS) | txtColor | RIGHT, 0, nullptr, "%");
+                                fillW, barH, COLOR_THEME_SECONDARY1);
+
+      if (currChan < lastChan - 1) {
+        dc->drawSolidFilledRect()
+      }
+
+      // lcd->drawSolidVerticalLine(barMid, barTop, barH, COLOR_THEME_SECONDARY1);
+      // dc->drawRect(x, rowTop, w, rowH + 1);
+      dc->drawNumber(x + barW - 10, barTop, chanVal, FONT(XS) | txtColor | RIGHT, 0, nullptr, "%");
       if (g_model.limitData[curChan - 1].name[0] != 0) {
-        dc->drawNumber(barLft + 1, barTop, curChan,
-                       FONT(XS) | txtColor | LEFT | LEADING0, 2);
+        dc->drawNumber(barLft + 1, barTop, curChan, FONT(XS) | txtColor | LEFT | LEADING0, 2);
         dc->drawSizedText(barLft + 23, barTop,
                           g_model.limitData[curChan - 1].name,
                           sizeof(g_model.limitData[curChan - 1].name),
                           FONT(XS) | txtColor | LEFT);
       } else {
-        drawSource(dc, barLft + 1, barTop, MIXSRC_FIRST_CH + curChan - 1,
-                   FONT(XS) | txtColor | LEFT);
+        drawSource(dc, barLft + 1, barTop, MIXSRC_FIRST_CH + curChan - 1, FONT(XS) | txtColor | LEFT);
       }
     }
     return lastChan - 1;

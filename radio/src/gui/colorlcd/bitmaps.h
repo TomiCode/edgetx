@@ -43,6 +43,7 @@ extern const uint8_t LBM_TRIM_SHADOW[];
 extern const uint8_t LBM_TIMER_BACKGROUND[];
 extern const uint8_t LBM_TIMER[];
 extern const uint8_t LBM_RSCALE[];
+extern const uint8_t LBM_MODEL[];
 
 // Model selection icons
 extern const uint8_t LBM_LIBRARY_SLOT[];
